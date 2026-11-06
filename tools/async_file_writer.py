@@ -21,6 +21,7 @@ import csv
 import json
 import os
 import pathlib
+from datetime import datetime
 from typing import Dict, List
 import aiofiles
 import config
@@ -32,6 +33,8 @@ class AsyncFileWriter:
         self.lock = asyncio.Lock()
         self.platform = platform
         self.crawler_type = crawler_type
+        # Keep every crawler run in its own output files, even when runs share a day.
+        self.run_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
         self.wordcloud_generator = AsyncWordCloudGenerator() if config.ENABLE_GET_WORDCLOUD else None
 
     def _get_file_path(self, file_type: str, item_type: str) -> str:
@@ -40,7 +43,7 @@ class AsyncFileWriter:
         else:
             base_path = f"data/{self.platform}/{file_type}"
         pathlib.Path(base_path).mkdir(parents=True, exist_ok=True)
-        file_name = f"{self.crawler_type}_{item_type}_{utils.get_current_date()}.{file_type}"
+        file_name = f"{self.crawler_type}_{item_type}_{self.run_timestamp}.{file_type}"
         return f"{base_path}/{file_name}"
 
     async def write_to_csv(self, item: Dict, item_type: str):
