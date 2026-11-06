@@ -61,3 +61,11 @@ async def get_logs(limit: int = 100):
     """Get recent logs"""
     logs = crawler_manager.logs[-limit:] if limit > 0 else crawler_manager.logs
     return {"logs": [log.model_dump() for log in logs]}
+
+
+@router.get("/radar-export")
+async def get_radar_export():
+    try:
+        return crawler_manager.get_radar_export()
+    except ValueError as error:
+        raise HTTPException(status_code=409, detail=str(error)) from error

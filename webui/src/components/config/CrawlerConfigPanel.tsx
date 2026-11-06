@@ -1,7 +1,7 @@
 import type { ComponentType, ReactNode, KeyboardEvent } from 'react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Database, Globe, Image as ImageIcon, KeyRound, MessageSquare, Play, Square, X } from 'lucide-react'
+import { Database, Globe, Image as ImageIcon, KeyRound, MessageSquare, Play, Radar, Square, X } from 'lucide-react'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
@@ -156,6 +156,13 @@ export function CrawlerConfigPanel() {
 
   const handleStop = () => {
     stopCrawler()
+  }
+
+  const handleOpenDemandRadar = () => {
+    const source = new URL('/api/crawler/radar-export', window.location.origin)
+    const radar = new URL('http://127.0.0.1:4174')
+    radar.searchParams.set('source', source.toString())
+    window.open(radar.toString(), '_blank', 'noopener,noreferrer')
   }
 
   return (
@@ -431,6 +438,20 @@ export function CrawlerConfigPanel() {
           </Button>
         )}
       </div>
+
+      <Button
+        type="button"
+        variant="outline"
+        onClick={handleOpenDemandRadar}
+        disabled={isDisabled}
+        className="w-full h-10 border-cyber-neon-cyan/50 text-cyber-neon-cyan font-mono hover:bg-cyber-neon-cyan/10"
+      >
+        <Radar className="w-4 h-4" />
+        导入本次数据并打开烦恼雷达
+      </Button>
+      <p className="text-center text-[10px] font-mono text-cyber-text-muted">
+        爬取完成后使用；需要本次任务已保存内容和评论数据。
+      </p>
     </div>
   )
 }
