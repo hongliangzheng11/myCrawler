@@ -34,8 +34,16 @@ from fastapi.responses import FileResponse
 
 from .routers import crawler_router, data_router, websocket_router
 
-# Project root directory (used for running subprocesses like uv run main.py)
+# Project root directory (used for running crawler subprocesses)
 PROJECT_ROOT = Path(__file__).parent.parent
+
+
+def get_project_python() -> str:
+    """Use the project's virtual environment before falling back to this server's Python."""
+    venv_python = PROJECT_ROOT / ".venv" / (
+        "Scripts/python.exe" if sys.platform == "win32" else "bin/python"
+    )
+    return str(venv_python) if venv_python.exists() else sys.executable
 
 app = FastAPI(
     title="MediaCrawler WebUI API",
@@ -89,14 +97,15 @@ async def health_check():
 async def check_environment():
     """Check if MediaCrawler environment is configured correctly"""
     try:
-        # Run uv run main.py --help command to check environment
-        # Use PROJECT_ROOT so it works regardless of where uvicorn was started
+        # Run with the project virtualenv so the WebUI does not require a global uv command.
+        command = [get_project_python(), "main.py", "--help"]
+        # Use PROJECT_ROOT so it works regardless of where uvicorn was started.
         if sys.platform == "win32":
             loop = asyncio.get_running_loop()
             process = await loop.run_in_executor(
                 None,
                 lambda: subprocess.run(
-                    ["uv", "run", "main.py", "--help"],
+                    command,
                     capture_output=True,
                     timeout=30.0,
                     cwd=str(PROJECT_ROOT)
@@ -105,7 +114,7 @@ async def check_environment():
             stdout, stderr = process.stdout, process.stderr  # bytes
         else:
             process = await asyncio.create_subprocess_exec(
-                "uv", "run", "main.py", "--help",
+                *command,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 cwd=str(PROJECT_ROOT)  # Project root directory
@@ -136,8 +145,8 @@ async def check_environment():
     except FileNotFoundError:
         return {
             "success": False,
-            "message": "uv command not found",
-            "error": "Please ensure uv is installed and configured in system PATH"
+            "message": "Python runtime not found",
+            "error": "The project virtual environment and server Python were not found"
         }
     except Exception as e:
         return {

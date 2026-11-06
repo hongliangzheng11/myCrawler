@@ -20,6 +20,7 @@ import asyncio
 import subprocess
 import signal
 import os
+import sys
 from typing import Optional, List
 from datetime import datetime
 from pathlib import Path
@@ -204,7 +205,13 @@ class CrawlerManager:
 
     def _build_command(self, config: CrawlerStartRequest) -> list:
         """Build main.py command line arguments"""
-        cmd = ["uv", "run", "python", "main.py"]
+        venv_python = self._project_root / ".venv" / (
+            "Scripts/python.exe" if sys.platform == "win32" else "bin/python"
+        )
+        python_executable = str(venv_python) if venv_python.exists() else sys.executable
+        # Run via the active/project virtual environment. This keeps the WebUI usable
+        # when uv is not installed globally or is absent from PATH.
+        cmd = [python_executable, "main.py"]
 
         cmd.extend(["--platform", config.platform.value])
         cmd.extend(["--lt", config.login_type.value])

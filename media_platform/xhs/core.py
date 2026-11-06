@@ -314,8 +314,20 @@ class XiaoHongShuCrawler(AbstractCrawler):
                     pass
 
                 if not note_detail:
-                    note_detail = await self.xhs_client.get_note_by_id_from_html(note_id, xsec_source, xsec_token,
-                                                                                 enable_cookie=True)
+                    try:
+                        note_detail = await self.xhs_client.get_note_by_id_from_html(
+                            note_id,
+                            xsec_source,
+                            xsec_token,
+                            enable_cookie=True,
+                        )
+                    except RetryError as ex:
+                        # HTML fallback can fail when XHS embeds non-JSON state for an
+                        # individual note. Do not abort the full search batch for it.
+                        utils.logger.warning(
+                            f"[skip] Failed to parse note detail after retries, Id: {note_id}, err: {ex}"
+                        )
+                        return None
                     if not note_detail:
                         utils.logger.warning(f"[skip] Failed to get note detail, Id: {note_id}, 跳过继续")
                         return None
