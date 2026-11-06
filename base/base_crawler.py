@@ -18,6 +18,7 @@
 # 使用本代码即表示您同意遵守上述原则和LICENSE中的所有条款。
 
 from abc import ABC, abstractmethod
+from functools import wraps
 from typing import Dict, Optional
 
 from playwright.async_api import BrowserContext, BrowserType, Playwright
@@ -84,6 +85,24 @@ class AbstractLogin(ABC):
 
 
 class AbstractStore(ABC):
+
+    def __init_subclass__(cls, **kwargs):
+        """Apply the global content quota to every concrete storage backend."""
+        super().__init_subclass__(**kwargs)
+        store_content = cls.__dict__.get("store_content")
+        if store_content is None or getattr(store_content, "_quota_wrapped", False):
+            return
+
+        @wraps(store_content)
+        async def quota_limited_store_content(self, content_item: Dict):
+            from tools.crawl_quota import content_quota
+
+            if not await content_quota.reserve():
+                return
+            return await store_content(self, content_item)
+
+        quota_limited_store_content._quota_wrapped = True
+        setattr(cls, "store_content", quota_limited_store_content)
 
     @abstractmethod
     async def store_content(self, content_item: Dict):

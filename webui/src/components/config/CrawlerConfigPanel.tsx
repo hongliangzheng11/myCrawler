@@ -1,5 +1,4 @@
-import type { ComponentType, ReactNode, KeyboardEvent } from 'react'
-import { useState } from 'react'
+import type { ComponentType, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Database, Globe, Image as ImageIcon, KeyRound, MessageSquare, Play, Square, X } from 'lucide-react'
 import { Label } from '@/components/ui/label'
@@ -74,38 +73,17 @@ type KeywordInputProps = {
 }
 
 function KeywordInput({ value, onChange, placeholder, disabled }: KeywordInputProps) {
-  const [inputValue, setInputValue] = useState('')
-
-  // 将逗号分隔的字符串转换为数组
-  const keywords = value ? value.split(',').map((k) => k.trim()).filter(Boolean) : []
-
-  const commitInput = () => {
-    const trimmed = inputValue.trim()
-    if (trimmed && !keywords.includes(trimmed)) {
-      onChange([...keywords, trimmed].join(','))
-    }
-    setInputValue('')
-  }
-
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      commitInput()
-    }
-  }
+  const keywords = value.split(',').map((keyword) => keyword.trim()).filter(Boolean)
 
   const removeKeyword = (keywordToRemove: string) => {
-    const newKeywords = keywords.filter((k) => k !== keywordToRemove)
-    onChange(newKeywords.join(','))
+    onChange(keywords.filter((keyword) => keyword !== keywordToRemove).join(','))
   }
 
   return (
     <div className="space-y-2">
       <Input
-        value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
-        onKeyDown={handleKeyDown}
-        onBlur={commitInput}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
         disabled={disabled}
         className="h-9 text-xs"
@@ -149,6 +127,13 @@ export function CrawlerConfigPanel() {
   const isDisabled = status === 'running' || status === 'stopping'
   const isRunning = status === 'running'
   const isBusy = isStarting || isStopping || status === 'stopping'
+  const recommendedInterval = config.total_max_notes_count <= 100
+    ? 2
+    : config.total_max_notes_count <= 1000
+      ? 3
+      : config.total_max_notes_count <= 10000
+        ? 5
+        : 10
 
   const handleStart = () => {
     startCrawler(config)
@@ -346,6 +331,44 @@ export function CrawlerConfigPanel() {
               </SelectContent>
             </Select>
           </Field>
+
+          <div className="grid grid-cols-2 gap-3">
+            <Field label={t('field.totalMaxNotes')} hint={t('field.totalMaxNotesHint')}>
+              <Input
+                type="number"
+                min={1}
+                max={10000}
+                value={config.total_max_notes_count}
+                onChange={(e) => updateConfig({ total_max_notes_count: Math.max(1, parseInt(e.target.value) || 1) })}
+                disabled={isDisabled}
+                className="h-9 text-xs"
+              />
+            </Field>
+
+            <Field label={t('field.crawlInterval')} hint={t('field.crawlIntervalHint', { recommended: recommendedInterval })}>
+              <div className="space-y-2">
+                <Input
+                  type="number"
+                  min={0.1}
+                  step={0.1}
+                  value={config.crawl_interval}
+                  onChange={(e) => updateConfig({ crawl_interval: Math.max(0.1, parseFloat(e.target.value) || 0.1) })}
+                  disabled={isDisabled}
+                  className="h-9 text-xs"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => updateConfig({ crawl_interval: recommendedInterval })}
+                  disabled={isDisabled || config.crawl_interval === recommendedInterval}
+                  className="w-full h-7 text-[10px] font-mono"
+                >
+                  {t('field.useRecommendedInterval', { recommended: recommendedInterval })}
+                </Button>
+              </div>
+            </Field>
+          </div>
 
           <div className="space-y-2">
             <div className="flex items-center gap-3 rounded-lg border border-cyber-border-subtle bg-cyber-bg-tertiary/30 p-2.5 hover:border-cyber-border-DEFAULT transition-colors">
