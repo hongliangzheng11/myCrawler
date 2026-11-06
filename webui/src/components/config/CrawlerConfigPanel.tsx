@@ -1,5 +1,4 @@
-import type { ComponentType, ReactNode, KeyboardEvent } from 'react'
-import { useState } from 'react'
+import type { ComponentType, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Database, Globe, Image as ImageIcon, KeyRound, MessageSquare, Play, Square, X } from 'lucide-react'
 import { Label } from '@/components/ui/label'
@@ -74,38 +73,17 @@ type KeywordInputProps = {
 }
 
 function KeywordInput({ value, onChange, placeholder, disabled }: KeywordInputProps) {
-  const [inputValue, setInputValue] = useState('')
-
-  // 将逗号分隔的字符串转换为数组
-  const keywords = value ? value.split(',').map((k) => k.trim()).filter(Boolean) : []
-
-  const commitInput = () => {
-    const trimmed = inputValue.trim()
-    if (trimmed && !keywords.includes(trimmed)) {
-      onChange([...keywords, trimmed].join(','))
-    }
-    setInputValue('')
-  }
-
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      commitInput()
-    }
-  }
+  const keywords = value.split(',').map((keyword) => keyword.trim()).filter(Boolean)
 
   const removeKeyword = (keywordToRemove: string) => {
-    const newKeywords = keywords.filter((k) => k !== keywordToRemove)
-    onChange(newKeywords.join(','))
+    onChange(keywords.filter((keyword) => keyword !== keywordToRemove).join(','))
   }
 
   return (
     <div className="space-y-2">
       <Input
-        value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
-        onKeyDown={handleKeyDown}
-        onBlur={commitInput}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
         disabled={disabled}
         className="h-9 text-xs"
