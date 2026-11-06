@@ -236,6 +236,9 @@ class CrawlerManager:
         if config.max_notes_count is not None:
             cmd.extend(["--crawler_max_notes_count", str(config.max_notes_count)])
 
+        if config.crawl_interval is not None:
+            cmd.extend(["--crawl_interval", str(config.crawl_interval)])
+
         if config.max_comments_count is not None:
             cmd.extend(["--max_comments_count_singlenotes", str(config.max_comments_count)])
 

@@ -325,6 +325,32 @@ export function CrawlerConfigPanel() {
             </Select>
           </Field>
 
+          <div className="grid grid-cols-2 gap-3">
+            <Field label={t('field.maxNotes')} hint={t('field.maxNotesHint')}>
+              <Input
+                type="number"
+                min={1}
+                max={10000}
+                value={config.max_notes_count}
+                onChange={(e) => updateConfig({ max_notes_count: Math.max(1, parseInt(e.target.value) || 1) })}
+                disabled={isDisabled}
+                className="h-9 text-xs"
+              />
+            </Field>
+
+            <Field label={t('field.crawlInterval')} hint={t('field.crawlIntervalHint')}>
+              <Input
+                type="number"
+                min={0.1}
+                step={0.1}
+                value={config.crawl_interval}
+                onChange={(e) => updateConfig({ crawl_interval: Math.max(0.1, parseFloat(e.target.value) || 0.1) })}
+                disabled={isDisabled}
+                className="h-9 text-xs"
+              />
+            </Field>
+          </div>
+
           <div className="space-y-2">
             <div className="flex items-center gap-3 rounded-lg border border-cyber-border-subtle bg-cyber-bg-tertiary/30 p-2.5 hover:border-cyber-border-DEFAULT transition-colors">
               <Checkbox

@@ -77,6 +77,7 @@ class CrawlerStartRequest(BaseModel):
     headless: bool = False
     max_notes_count: Optional[int] = Field(default=None, ge=1, le=MAX_API_LIMIT_COUNT)
     max_comments_count: Optional[int] = Field(default=None, ge=1, le=MAX_API_LIMIT_COUNT)
+    crawl_interval: Optional[float] = Field(default=None, ge=0.1, le=3600)
 
 
 class CrawlerStatusResponse(BaseModel):
