@@ -127,6 +127,13 @@ export function CrawlerConfigPanel() {
   const isDisabled = status === 'running' || status === 'stopping'
   const isRunning = status === 'running'
   const isBusy = isStarting || isStopping || status === 'stopping'
+  const recommendedInterval = config.total_max_notes_count <= 100
+    ? 2
+    : config.total_max_notes_count <= 1000
+      ? 3
+      : config.total_max_notes_count <= 10000
+        ? 5
+        : 10
 
   const handleStart = () => {
     startCrawler(config)
@@ -326,19 +333,19 @@ export function CrawlerConfigPanel() {
           </Field>
 
           <div className="grid grid-cols-2 gap-3">
-            <Field label={t('field.maxNotes')} hint={t('field.maxNotesHint')}>
+            <Field label={t('field.totalMaxNotes')} hint={t('field.totalMaxNotesHint')}>
               <Input
                 type="number"
                 min={1}
                 max={10000}
-                value={config.max_notes_count}
-                onChange={(e) => updateConfig({ max_notes_count: Math.max(1, parseInt(e.target.value) || 1) })}
+                value={config.total_max_notes_count}
+                onChange={(e) => updateConfig({ total_max_notes_count: Math.max(1, parseInt(e.target.value) || 1) })}
                 disabled={isDisabled}
                 className="h-9 text-xs"
               />
             </Field>
 
-            <Field label={t('field.crawlInterval')} hint={t('field.crawlIntervalHint')}>
+            <Field label={t('field.crawlInterval')} hint={t('field.crawlIntervalHint', { recommended: recommendedInterval })}>
               <Input
                 type="number"
                 min={0.1}

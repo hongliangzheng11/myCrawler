@@ -101,6 +101,10 @@ START_PAGE = 1
 # Control the number of crawled videos/posts
 CRAWLER_MAX_NOTES_COUNT = 15
 
+# Total number of content items that may be saved by one crawler run. None disables
+# the process-wide quota; the WebUI always supplies an explicit value.
+CRAWLER_TOTAL_MAX_NOTES_COUNT = None
+
 # Controlling the number of concurrent crawlers
 MAX_CONCURRENCY_NUM = 1
 

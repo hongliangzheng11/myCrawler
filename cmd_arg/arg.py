@@ -292,6 +292,15 @@ async def parse_cmd(argv: Optional[Sequence[str]] = None):
                 rich_help_panel="Basic Configuration",
             ),
         ] = config.CRAWLER_MAX_NOTES_COUNT,
+        crawler_total_max_notes_count: Annotated[
+            Optional[int],
+            typer.Option(
+                "--crawler_total_max_notes_count",
+                min=1,
+                help="Global maximum number of content items saved across the whole run",
+                rich_help_panel="Basic Configuration",
+            ),
+        ] = config.CRAWLER_TOTAL_MAX_NOTES_COUNT,
         crawl_interval: Annotated[
             float,
             typer.Option(
@@ -379,6 +388,7 @@ async def parse_cmd(argv: Optional[Sequence[str]] = None):
         config.COOKIES = cookies
         config.CRAWLER_MAX_COMMENTS_COUNT_SINGLENOTES = max_comments_count_singlenotes
         config.CRAWLER_MAX_NOTES_COUNT = crawler_max_notes_count
+        config.CRAWLER_TOTAL_MAX_NOTES_COUNT = crawler_total_max_notes_count
         config.CRAWLER_MAX_SLEEP_SEC = crawl_interval
         config.MAX_CONCURRENCY_NUM = max_concurrency_num
         config.SAVE_DATA_PATH = save_data_path

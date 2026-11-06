@@ -55,6 +55,7 @@ const defaultConfig: CrawlerConfig = {
   creator_ids: '',
   start_page: 1,
   max_notes_count: 15,
+  total_max_notes_count: 15,
   crawl_interval: 2,
   enable_comments: true,
   enable_sub_comments: false,

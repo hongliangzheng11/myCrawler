@@ -17,6 +17,7 @@
 # 使用本代码即表示您同意遵守上述原则和LICENSE中的所有条款。
 
 import asyncio
+import math
 import subprocess
 import signal
 import os
@@ -233,7 +234,13 @@ class CrawlerManager:
         cmd.extend(["--get_sub_comment", "true" if config.enable_sub_comments else "false"])
         cmd.extend(["--get_media", "true" if config.enable_media else "false"])
 
-        if config.max_notes_count is not None:
+        if config.total_max_notes_count is not None:
+            keywords = [keyword.strip() for keyword in config.keywords.split(",") if keyword.strip()]
+            keyword_count = max(len(keywords), 1)
+            per_keyword_limit = math.ceil(config.total_max_notes_count / keyword_count)
+            cmd.extend(["--crawler_max_notes_count", str(per_keyword_limit)])
+            cmd.extend(["--crawler_total_max_notes_count", str(config.total_max_notes_count)])
+        elif config.max_notes_count is not None:
             cmd.extend(["--crawler_max_notes_count", str(config.max_notes_count)])
 
         if config.crawl_interval is not None:
