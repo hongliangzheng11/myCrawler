@@ -57,6 +57,7 @@
     "totalMaxNotesHint": "Maximum posts/videos saved across all keywords in this run",
     "crawlInterval": "REQUEST DELAY (SECONDS)",
     "crawlIntervalHint": "Minimum wait between crawler requests; use at least {{recommended}} seconds for this total",
+    "useRecommendedInterval": "USE RECOMMENDED: {{recommended}}s",
     "commentExtraction": "Comment Extraction",
     "subComments": "Sub-comments",
     "downloadMedia": "DOWNLOAD_MEDIA",

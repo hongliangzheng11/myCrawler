@@ -346,15 +346,27 @@ export function CrawlerConfigPanel() {
             </Field>
 
             <Field label={t('field.crawlInterval')} hint={t('field.crawlIntervalHint', { recommended: recommendedInterval })}>
-              <Input
-                type="number"
-                min={0.1}
-                step={0.1}
-                value={config.crawl_interval}
-                onChange={(e) => updateConfig({ crawl_interval: Math.max(0.1, parseFloat(e.target.value) || 0.1) })}
-                disabled={isDisabled}
-                className="h-9 text-xs"
-              />
+              <div className="space-y-2">
+                <Input
+                  type="number"
+                  min={0.1}
+                  step={0.1}
+                  value={config.crawl_interval}
+                  onChange={(e) => updateConfig({ crawl_interval: Math.max(0.1, parseFloat(e.target.value) || 0.1) })}
+                  disabled={isDisabled}
+                  className="h-9 text-xs"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => updateConfig({ crawl_interval: recommendedInterval })}
+                  disabled={isDisabled || config.crawl_interval === recommendedInterval}
+                  className="w-full h-7 text-[10px] font-mono"
+                >
+                  {t('field.useRecommendedInterval', { recommended: recommendedInterval })}
+                </Button>
+              </div>
             </Field>
           </div>
 

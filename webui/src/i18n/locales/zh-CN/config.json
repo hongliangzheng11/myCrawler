@@ -57,6 +57,7 @@
     "totalMaxNotesHint": "本次任务所有关键词合计最多保存的帖子/视频数",
     "crawlInterval": "请求间隔（秒）",
     "crawlIntervalHint": "每次请求之间的最短等待时间；当前总量建议不少于 {{recommended}} 秒",
+    "useRecommendedInterval": "采用建议值：{{recommended}} 秒",
     "commentExtraction": "评论抓取",
     "subComments": "子评论",
     "downloadMedia": "下载媒体",
